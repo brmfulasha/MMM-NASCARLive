@@ -5,6 +5,13 @@
     border-radius: 8px;
     text-align: center;
 }
+.nascar-header {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffcc00; /* NASCAR gold */
+    text-align: center;
+    margin-bottom: 10px;
+}
 
 .nascar-title {
     font-size: 18px;
