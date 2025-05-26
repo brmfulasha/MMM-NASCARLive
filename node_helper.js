@@ -1,5 +1,5 @@
 const NodeHelper = require("node_helper");
-const fetch = require("node-fetch");
+const axios = require("axios");
 
 module.exports = NodeHelper.create({
     start: function () {
@@ -14,18 +14,13 @@ module.exports = NodeHelper.create({
 
     fetchData: function (jsonUrl) {
         const self = this;
-        fetch(jsonUrl)
+        axios
+            .get(jsonUrl)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data || Object.keys(data).length === 0) {
+                if (!response.data || Object.keys(response.data).length === 0) {
                     throw new Error("Invalid NASCAR data received.");
                 }
-                self.sendSocketNotification("NASCAR_DATA", data);
+                self.sendSocketNotification("NASCAR_DATA", response.data);
             })
             .catch(error => {
                 console.error("Error fetching NASCAR data:", error);
