@@ -15,10 +15,21 @@ module.exports = NodeHelper.create({
     fetchData: function (jsonUrl) {
         const self = this;
         fetch(jsonUrl)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                if (!data || Object.keys(data).length === 0) {
+                    throw new Error("Invalid NASCAR data received.");
+                }
                 self.sendSocketNotification("NASCAR_DATA", data);
             })
-            .catch(error => console.error("Error fetching NASCAR data:", error));
+            .catch(error => {
+                console.error("Error fetching NASCAR data:", error);
+                self.sendSocketNotification("NASCAR_ERROR", error.message);
+            });
     }
 });
