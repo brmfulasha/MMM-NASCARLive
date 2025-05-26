@@ -31,9 +31,5 @@ Module.register("MMM-NASCARLive", {
         header.className = "nascar-header";
         header.innerText = headerText;
         wrapper.appendChild(header);
-
-        // If an error occurred, display the error message and exit early:
-        if (this.error) {
-        }
     }
 }
