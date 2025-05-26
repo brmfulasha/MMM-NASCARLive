@@ -32,4 +32,4 @@ Module.register("MMM-NASCARLive", {
         header.innerText = headerText;
         wrapper.appendChild(header);
     }
-}
+});
