@@ -10,7 +10,7 @@ Module.register("MMM-NASCARLive", {
     socketNotificationReceived: function (notification, payload) {
         if (notification === "NASCAR_DATA") {
             this.data = payload;
-            this.error = null; // Reset any previous error message
+            this.error = null; // Clear any previous error
             this.updateDom();
         } else if (notification === "NASCAR_ERROR") {
             this.error = payload;
@@ -22,38 +22,15 @@ Module.register("MMM-NASCARLive", {
     getDom: function () {
         const wrapper = document.createElement("div");
 
-        // Determine header text based on available data
+        // Create the header using available race data:
         let headerText = "NASCAR Live Feed";
         if (this.data && this.data.series && this.data.race_name) {
             headerText = `${this.data.series[0].series_name} - ${this.data.race_name}`;
         }
-
-        // Create and append header
         const header = document.createElement("h2");
         header.className = "nascar-header";
         header.innerText = headerText;
         wrapper.appendChild(header);
 
-        // Error handling: if an error exists, display it and return early
+        // If an error occurred, display the error message and exit early:
         if (this.error) {
-            const errorDiv = document.createElement("div");
-            errorDiv.className = "nascar-error";
-            errorDiv.innerText = `⚠️ Error: ${this.error}`;
-            wrapper.appendChild(errorDiv);
-            return wrapper;
-        }
-
-        // Create content area to display data or a loading message
-        const content = document.createElement("div");
-        content.innerHTML = this.data
-            ? `<pre>${JSON.stringify(this.data, null, 2)}</pre>`
-            : "Loading NASCAR live data...";
-        wrapper.appendChild(content);
-
-        return wrapper;
-    },
-
-    getStyles: function () {
-        return ["MMM-NASCARLive.css"];
-    }
-});
