@@ -1,0 +1,44 @@
+.MMM-NASCARLive {
+    font-family: Arial, sans-serif;
+    color: #ffffff; /* White text */
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.nascar-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffcc00; /* NASCAR gold */
+    margin-bottom: 5px;
+}
+
+.nascar-data {
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.nascar-highlight {
+    color: #ff6600; /* Bright orange for important data */
+    font-weight: bold;
+}
+
+.nascar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nascar-table th, .nascar-table td {
+    padding: 5px;
+    border-bottom: 1px solid #444;
+}
+
+.nascar-table th {
+    background: #222;
+    color: #ffcc00;
+}
+
+.nascar-table tr:nth-child(even) {
+    background: #333;
+}
