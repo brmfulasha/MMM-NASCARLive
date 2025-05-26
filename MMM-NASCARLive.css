@@ -49,3 +49,9 @@
 .nascar-table tr:nth-child(even) {
     background: #333;
 }
+.nascar-error {
+    color: #ff4444; /* Red for errors */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
