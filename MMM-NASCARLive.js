@@ -1,35 +1,103 @@
 Module.register("MMM-NASCARLive", {
-    defaults: {
-        jsonUrl: "https://cf.nascar.com/live/feeds/live-feed.json"
-    },
+  defaults: {
+    updateIntervalRaceDay: 60000 // 60 seconds when a race is active
+  },
 
-    start: function () {
-        this.sendSocketNotification("GET_NASCAR_DATA", this.config.jsonUrl);
-    },
+  start: function () {
+    this.drivers = [];
+    this.raceActive = false;
+    this.raceName = "NASCAR Live Standings";
+    this.currentTimeout = null;
+    this.getData();
+  },
 
-    socketNotificationReceived: function (notification, payload) {
-        if (notification === "NASCAR_DATA") {
-            this.data = payload;
-            this.error = null; // Clear any previous error
-            this.updateDom();
-        } else if (notification === "NASCAR_ERROR") {
-            this.error = payload;
-            this.data = null; // Clear any stale data in case of error
-            this.updateDom();
-        }
-    },
+  /**
+   * Schedule the next data fetch.
+   * If the race is active, update every 60 seconds.
+   * In non–race periods, poll once at the next 6 AM.
+   */
+  scheduleNextFetch: function () {
+    let interval;
 
-    getDom: function () {
-        const wrapper = document.createElement("div");
-
-        // Create the header using available race data:
-        let headerText = "NASCAR Live Feed";
-        if (this.data && this.data.series && this.data.race_name) {
-            headerText = `${this.data.series[0].series_name} - ${this.data.race_name}`;
-        }
-        const header = document.createElement("h2");
-        header.className = "nascar-header";
-        header.innerText = headerText;
-        wrapper.appendChild(header);
+    if (this.raceActive) {
+      interval = this.config.updateIntervalRaceDay;
+    } else {
+      // Calculate the milliseconds until the next 6 AM local time.
+      const now = new Date();
+      const next6am = new Date();
+      next6am.setHours(6, 0, 0, 0); // Set time to 6:00 AM today.
+      
+      // If it's already after 6 AM, schedule for tomorrow.
+      if (now.getTime() >= next6am.getTime()) {
+        next6am.setDate(next6am.getDate() + 1);
+      }
+      
+      interval = next6am.getTime() - now.getTime();
+      console.log(
+        `Non–race day: Next poll scheduled in ${interval} ms (at ${next6am.toLocaleTimeString()}).`
+      );
     }
+
+    if (this.currentTimeout) {
+      clearTimeout(this.currentTimeout);
+    }
+
+    this.currentTimeout = setTimeout(() => {
+      this.getData();
+    }, interval);
+  },
+
+  /**
+   * Send a socket notification to request data.
+   */
+  getData: function () {
+    this.sendSocketNotification("FETCH_NASCAR_DATA");
+  },
+
+  /**
+   * Receive updated data from node_helper and update the DOM.
+   */
+  socketNotificationReceived: function (notification, payload) {
+    if (notification === "NASCAR_DATA") {
+      this.drivers = payload.drivers;
+      this.raceActive = payload.raceActive;
+      this.raceName = payload.raceName || "No Active NASCAR Race";
+      this.updateDom();
+      this.scheduleNextFetch();
+    } else {
+      console.error("Unexpected socket notification received:", notification);
+    }
+  },
+
+  /**
+   * Build and return the module DOM.
+   * If there's no active race, hide the module.
+   */
+  getDom: function () {
+    let wrapper = document.createElement("div");
+
+    if (!this.raceActive) {
+      this.hide(1000);
+      return wrapper;
+    } else {
+      this.show(1000);
+    }
+
+    wrapper.innerHTML = `<h2>🏁 ${this.raceName} 🏁</h2>`;
+
+    if (this.drivers.length === 0) {
+      wrapper.innerHTML += "<p>Loading...</p>";
+      return wrapper;
+    }
+
+    let list = document.createElement("ul");
+    this.drivers.forEach(driver => {
+      let listItem = document.createElement("li");
+      listItem.innerHTML = `#${driver.running_position}: <strong>${driver.full_name}</strong> (Car ${driver.vehicle_number})`;
+      list.appendChild(listItem);
+    });
+
+    wrapper.appendChild(list);
+    return wrapper;
+  }
 });
