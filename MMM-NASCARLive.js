@@ -1,32 +1,23 @@
-const Module = require("module");
+getDom: function () {
+    const wrapper = document.createElement("div");
 
-Module.register("MMM-NASCARLive", {
-    defaults: {
-        jsonUrl: "https://cf.nascar.com/live/feeds/live-feed.json"
-    },
+    // Set default header text
+    let headerText = "NASCAR Live Feed";
 
-    start: function () {
-        this.sendSocketNotification("GET_NASCAR_DATA", this.config.jsonUrl);
-    },
-
-    socketNotificationReceived: function (notification, payload) {
-        if (notification === "NASCAR_DATA") {
-            this.data = payload;
-            this.updateDom();
-        }
-    },
-
-    getDom: function () {
-        const wrapper = document.createElement("div");
-        if (this.data) {
-            wrapper.innerHTML = `<pre>${JSON.stringify(this.data, null, 2)}</pre>`;
-        } else {
-            wrapper.innerHTML = "Loading NASCAR live data...";
-        }
-        return wrapper;
-    },
-
-    getStyles: function () {
-        return ["MMM-NASCARLive.css"];
+    if (this.data && this.data.series) {
+        headerText = `${this.data.series[0].series_name} - ${this.data.race_name}`;
     }
-});
+
+    // Create header element
+    const header = document.createElement("h2");
+    header.className = "nascar-header";
+    header.innerText = headerText;
+    wrapper.appendChild(header);
+
+    // Display race data
+    const content = document.createElement("div");
+    content.innerHTML = this.data ? `<pre>${JSON.stringify(this.data, null, 2)}</pre>` : "Loading NASCAR live data...";
+    wrapper.appendChild(content);
+
+    return wrapper;
+},
