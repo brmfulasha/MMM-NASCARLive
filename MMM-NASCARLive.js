@@ -34,3 +34,6 @@ Module.register("MMM-NASCARLive", {
 
         // If an error occurred, display the error message and exit early:
         if (this.error) {
+        }
+    }
+}
