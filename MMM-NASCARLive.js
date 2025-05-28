@@ -1,37 +1,75 @@
-const https = require("https");
-
-/**
- * Fetches live NASCAR data from the official endpoint and logs the results.
+/* 
+ * MMM-NASCARLive - MagicMirror² Frontend Module (NO require calls!)
+ * All data fetching is done in node_helper.js
+ * This file only requests and displays the data!
  */
-function fetchNASCARLiveData() {
-  const url = "https://cf.nascar.com/live/feeds/live-feed.json";
+Module.register("MMM-NASCARLive", {
+  defaults: {
+    header: "NASCAR Top 10 Standings"
+  },
 
-  https.get(url, (res) => {
-    let data = "";
+  start: function () {
+    this.top10 = [];
+    this.raceActive = false;
+    this.raceName = "";
+    this.loaded = false;
+    this.sendSocketNotification("FETCH_NASCAR_DATA");
+  },
 
-    // A chunk of data has been received.
-    res.on("data", (chunk) => {
-      data += chunk;
+  socketNotificationReceived: function (notification, payload) {
+    if (notification === "NASCAR_DATA") {
+      this.top10 = payload.top10 || [];
+      this.raceActive = payload.raceActive;
+      this.raceName = payload.raceName || this.config.header;
+      this.loaded = true;
+      this.updateDom();
+    }
+    if (notification === "NASCAR_ERROR") {
+      this.raceName = "NASCAR Data Error";
+      this.top10 = [];
+      this.loaded = true;
+      this.updateDom();
+    }
+  },
+
+  getDom: function () {
+    const wrapper = document.createElement("div");
+    wrapper.className = "nascar-top10-container";
+
+    // Header
+    const header = document.createElement("div");
+    header.className = "nascar-top10-header";
+    header.innerText = this.raceName || this.config.header;
+    wrapper.appendChild(header);
+
+    // Loading/Error
+    if (!this.loaded) {
+      wrapper.innerHTML += "<p>Loading...</p>";
+      return wrapper;
+    }
+    if (!this.raceActive) {
+      wrapper.innerHTML += "<p>No active race.</p>";
+      return wrapper;
+    }
+
+    // Top 10 List
+    const list = document.createElement("ul");
+    list.className = "nascar-top10-list";
+    this.top10.forEach(driver => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="nascar-pos">${driver.running_position}</span>
+        <span class="nascar-driver-name">${driver.full_name}</span>
+        <span class="nascar-car-num">#${driver.vehicle_number}</span>
+        <span class="nascar-driver-delta">${driver.delta ? driver.delta : ""}</span>
+      `;
+      list.appendChild(li);
     });
+    wrapper.appendChild(list);
+    return wrapper;
+  },
 
-    // The whole response has been received.
-    res.on("end", () => {
-      try {
-        const json = JSON.parse(data);
-        console.log("NASCAR Live Data:", json);
-        // You can process or export the JSON here as needed.
-      } catch (err) {
-        console.error("Error parsing NASCAR Live JSON:", err);
-      }
-    });
-  }).on("error", (err) => {
-    console.error("Error fetching NASCAR Live feed:", err);
-  });
-}
-
-// Example usage:
-fetchNASCARLiveData();
-
-module.exports = {
-  fetchNASCARLiveData
-};
+  getStyles: function () {
+    return ["MMM-NASCARLive.css"];
+  }
+});
