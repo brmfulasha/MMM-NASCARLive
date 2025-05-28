@@ -52,7 +52,7 @@ module.exports = NodeHelper.create({
 
           // Determine if a race is currently active (basic check: vehicles exist)
           const raceActive = drivers.length > 0;
-          const raceName = json.race_name || "NASCAR Live";
+          const raceName = json.race_name || "NASCAR Cup Series";
 
           self.sendSocketNotification("NASCAR_DATA", {
             drivers,
