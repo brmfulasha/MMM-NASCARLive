@@ -1,89 +1,78 @@
-/* MMM-NASCARLive - NASCAR Top 10 Styling */
-
-.MMM-NASCARLive .nascar-top10-container {
-  max-width: 350px;
-  margin: 0 auto;
-  background: #161616;
-  border-radius: 12px;
-  box-shadow: 0 3px 16px rgba(0,0,0,0.18);
-  padding: 24px 20px 18px 20px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  color: #FFF;
+.MMM-NASCARLive {
+    font-family: Arial, sans-serif;
+    color: #ffffff; /* White text */
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
 }
 
-.MMM-NASCARLive .nascar-top10-header {
-  text-align: center;
-  font-size: 1.45em;
-  font-weight: bold;
-  letter-spacing: 1px;
-  margin-bottom: 18px;
-  color: #ffcc00;
-  text-shadow: 0 2px 8px #000a;
+.nascar-header {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffcc00; /* NASCAR gold */
+    text-align: center;
+    margin-bottom: 5px; /* updated from 10px */
 }
 
-.MMM-NASCARLive .nascar-top10-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.nascar-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffcc00; /* NASCAR gold */
+    margin-bottom: 5px;
 }
 
-.MMM-NASCARLive .nascar-top10-list li {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #232323 80%, #ffcc00 100%);
-  padding: 8px 12px;
-  font-size: 1.08em;
-  font-weight: 500;
-  transition: background 0.2s;
+.nascar-data {
+    font-size: 10px;
+    line-height: 1.5;
+    text-align: left;
 }
 
-.MMM-NASCARLive .nascar-top10-list li:last-child {
-  margin-bottom: 0;
+.nascar-highlight {
+    color: #ff6600; /* Bright orange for important data */
+    font-weight: bold;
 }
 
-.MMM-NASCARLive .nascar-pos {
-  width: 2em;
-  font-weight: bold;
-  color: #ffcc00;
-  text-align: right;
-  margin-right: 12px;
-  font-size: 1.15em;
+.nascar-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.MMM-NASCARLive .nascar-driver-name {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #FFF;
-  font-weight: 600;
+.nascar-table th, .nascar-table td {
+    padding: 5px;
+    border-bottom: 1px solid #444;
+    font-size: 10px;
 }
 
-.MMM-NASCARLive .nascar-car-num {
-  background: #ffcc00;
-  color: #232323;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.95em;
-  margin-left: 12px;
-  font-weight: bold;
+.nascar-table th {
+    background: #222;
+    color: #ffcc00;
 }
 
-.MMM-NASCARLive .nascar-driver-delta {
-  margin-left: 10px;
-  color: #aaa;
-  font-size: 0.92em;
-  font-style: italic;
+.nascar-table tr:nth-child(even) {
+    background: #333;
 }
 
-@media (max-width: 480px) {
-  .MMM-NASCARLive .nascar-top10-container {
-    max-width: 98vw;
-    padding: 9px 3vw 10px 3vw;
-  }
-  .MMM-NASCARLive .nascar-top10-header {
-    font-size: 1.1em;
-  }
+.nascar-error {
+    color: #ff4444; /* Red for errors */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 10px;
+}
+
+/* Reduce font on possible custom classes from your JS */
+.nascar-top10-header {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffcc00;
+    margin-bottom: 5px; /* updated from 10px */
+}
+
+.nascar-top10-list,
+.nascar-top10-list li,
+.nascar-pos,
+.nascar-driver-name,
+.nascar-car-num,
+.nascar-driver-delta {
+    font-size: 10px;
 }
