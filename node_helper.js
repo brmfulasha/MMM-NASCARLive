@@ -6,33 +6,16 @@ const FEED_URL = "https://cf.nascar.com/live/feeds/live-feed.json";
 module.exports = NodeHelper.create({
   start: function () {
     console.log("Starting node_helper for MMM-NASCARLive...");
-    this.scheduleDailyFetch();
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "FETCH_NASCAR_DATA") {
-      this.fetchNASCARLiveData();
+      const driverCount = payload && payload.driverCount ? payload.driverCount : 10;
+      this.fetchNASCARLiveData(driverCount);
     }
   },
 
-  /**
-   * Schedules the NASCAR data fetch to run once a day at 6:00 AM server time.
-   */
-  scheduleDailyFetch: function () {
-    const now = new Date();
-    const next6am = new Date(now);
-    next6am.setHours(6, 0, 0, 0);
-    if (now >= next6am) {
-      next6am.setDate(next6am.getDate() + 1); // Next day
-    }
-    const msUntil6am = next6am - now;
-    setTimeout(() => {
-      this.fetchNASCARLiveData();
-      setInterval(() => this.fetchNASCARLiveData(), 24 * 60 * 60 * 1000); // Repeat every 24 hours
-    }, msUntil6am);
-  },
-
-  fetchNASCARLiveData: function () {
+  fetchNASCARLiveData: function (driverCount) {
     const self = this;
     https.get(FEED_URL, (res) => {
       let data = "";
@@ -49,8 +32,8 @@ module.exports = NodeHelper.create({
             throw new Error("No vehicles data in NASCAR feed.");
           }
 
-          // Get top 10 by running_position (as number)
-          const top10 = json.vehicles
+          // Get top N by running_position (as number)
+          const drivers = json.vehicles
             .filter(
               (v) =>
                 v &&
@@ -59,27 +42,31 @@ module.exports = NodeHelper.create({
                 !!v.vehicle_number
             )
             .sort((a, b) => a.running_position - b.running_position)
-            .slice(0, 10)
+            .slice(0, driverCount)
             .map((v) => ({
               running_position: v.running_position,
               vehicle_number: v.vehicle_number,
               full_name: v.full_name,
-              delta: v.delta,
+              delta: v.delta || "",
             }));
 
+          // Determine if a race is currently active (basic check: vehicles exist)
+          const raceActive = drivers.length > 0;
+          const raceName = json.race_name || "NASCAR Live";
+
           self.sendSocketNotification("NASCAR_DATA", {
-            top10,
-            raceActive: !!json.race_id,
-            raceName: json.track_name || "NASCAR Race",
+            drivers,
+            raceActive,
+            raceName,
           });
-        } catch (err) {
-          console.error("Error parsing NASCAR Live JSON:", err);
-          self.sendSocketNotification("NASCAR_ERROR", err.message);
+        } catch (error) {
+          console.error("Error parsing NASCAR data:", error);
+          self.sendSocketNotification("NASCAR_ERROR", error.message);
         }
       });
-    }).on("error", (err) => {
-      console.error("Error fetching NASCAR Live feed:", err);
-      self.sendSocketNotification("NASCAR_ERROR", err.message);
+    }).on("error", (error) => {
+      console.error("Error fetching NASCAR data:", error);
+      self.sendSocketNotification("NASCAR_ERROR", error.message);
     });
   },
 });
