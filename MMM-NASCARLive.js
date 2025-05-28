@@ -1,86 +1,95 @@
-/*
-* MMM-NASCARLive - MagicMirror² Frontend Module (NO require calls!)
-* All data fetching is done in node_helper.js
-* This file only requests and displays the data!
-*/
-
 Module.register("MMM-NASCARLive", {
   defaults: {
-    header: "NASCAR Cup Series Running Order",
-    driverCount: 10, // Configurable driver count
-    imageBaseUrl: "https://cf.nascar.com/data/images/carbadges/1/", // Base URL for vehicle images
-    imageFileType: "png", // File type for vehicle images
-    imageHeight: 10 // Height in px for vehicle images
+    updateIntervalRaceDay: 60000, // 60 seconds when a race is active
+    showHeaderLogo: true,         // <--- Make logo header configurable
+    headerLogoPath: "logo.png"    // <--- Allow custom logo path if desired
   },
 
   start: function () {
-    this.drivers = [];
+    this.full_name = [];
     this.raceActive = false;
-    this.raceName = "";
-    this.loaded = false;
-    this.sendSocketNotification("FETCH_NASCAR_DATA", { driverCount: this.config.driverCount });
+    this.raceName = "NASCAR Live Standings";
+    this.currentTimeout = null;
+    this.getData();
+  },
+
+  scheduleNextFetch: function () {
+    let interval;
+    if (this.raceActive) {
+      interval = this.config.updateIntervalRaceDay;
+    } else {
+      const now = new Date();
+      const next6am = new Date();
+      next6am.setHours(6, 0, 0, 0);
+      if (now.getTime() >= next6am.getTime()) {
+        next6am.setDate(next6am.getDate() + 1);
+      }
+      interval = next6am.getTime() - now.getTime();
+      console.log(
+        `Non–race day: Next poll scheduled in ${interval} ms (at ${next6am.toLocaleTimeString()}).`
+      );
+    }
+    if (this.currentTimeout) {
+      clearTimeout(this.currentTimeout);
+    }
+    this.currentTimeout = setTimeout(() => {
+      this.getData();
+    }, interval);
+  },
+
+  getData: function () {
+    this.sendSocketNotification("FETCH_NASCAR_DATA");
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "NASCAR_DATA") {
-      this.drivers = payload.drivers || [];
+      this.full_name = payload.full_name;
       this.raceActive = payload.raceActive;
-      this.raceName = payload.raceName || this.config.header;
-      this.loaded = true;
+      this.raceName = payload.raceName || "No Active NASCAR Race";
       this.updateDom();
-    }
-    if (notification === "NASCAR_ERROR") {
-      this.raceName = "NASCAR Data Error";
-      this.drivers = [];
-      this.loaded = true;
-      this.updateDom();
+      this.scheduleNextFetch();
+    } else {
+      console.error("Unexpected socket notification received:", notification);
     }
   },
 
   getDom: function () {
-    const wrapper = document.createElement("div");
-    wrapper.className = "nascar-top10-container";
+    let wrapper = document.createElement("div");
 
-    // Header
-    const header = document.createElement("div");
-    header.className = "nascar-top10-header";
-    header.innerText = this.raceName || this.config.header;
-    wrapper.appendChild(header);
+    // Header logo (configurable)
+    if (this.config.showHeaderLogo) {
+      const header = document.createElement("div");
+      header.className = "nascar-header";
+      const logo = document.createElement("div");
+      logo.className = "nascar-header-logo";
+      // Dynamically set background image from config
+      logo.style.backgroundImage = `url('${this.file(this.config.headerLogoPath)}')`;
+      header.appendChild(logo);
+      wrapper.appendChild(header);
+    }
 
-    // Loading/Error
-    if (!this.loaded) {
+    if (!this.raceActive) {
+      this.hide(1000);
+      return wrapper;
+    } else {
+      this.show(1000);
+    }
+
+    wrapper.innerHTML += `<div class="nascar-title">🏁 ${this.raceName} 🏁</div>`;
+
+    if (this.full_name.length === 0) {
       wrapper.innerHTML += "<p>Loading...</p>";
       return wrapper;
     }
-    if (!this.raceActive) {
-      wrapper.innerHTML += "<p>No active race.</p>";
-      return wrapper;
-    }
 
-    // Driver List
-    const list = document.createElement("ul");
-    list.className = "nascar-top10-list";
-    this.drivers.forEach(driver => {
-      const imgUrl = `${this.config.imageBaseUrl}${driver.vehicle_number}.${this.config.imageFileType}`;
-      const imageTag = `
-        <span class="nascar-car-image">
-          <img src="${imgUrl}" alt="#${driver.vehicle_number}" style="height:${this.config.imageHeight}px;">
-        </span>
-      `;
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="nascar-pos">${driver.running_position}</span>
-        <span class="nascar-driver-name">${driver.full_name}</span>
-        ${imageTag}
-        <span class="nascar-driver-delta">${driver.delta ? driver.delta : ""}</span>
-      `;
-      list.appendChild(li);
+    let list = document.createElement("ul");
+    this.full_name.forEach(driver => {
+      let listItem = document.createElement("li");
+      listItem.innerHTML = `#${driver.running_position}: <strong>${driver.full_name}</strong> (Car ${driver.vehicle_number})`;
+      list.appendChild(listItem);
     });
+
     wrapper.appendChild(list);
     return wrapper;
-  },
-
-  getStyles: function () {
-    return ["MMM-NASCARLive.css"];
   }
 });
