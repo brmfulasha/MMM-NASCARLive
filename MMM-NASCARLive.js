@@ -1,24 +1,26 @@
-/* 
- * MMM-NASCARLive - MagicMirror² Frontend Module (NO require calls!)
- * All data fetching is done in node_helper.js
- * This file only requests and displays the data!
- */
+/*
+* MMM-NASCARLive - MagicMirror² Frontend Module (NO require calls!)
+* All data fetching is done in node_helper.js
+* This file only requests and displays the data!
+*/
+
 Module.register("MMM-NASCARLive", {
   defaults: {
-    header: "NASCAR Top 10 Standings"
+    header: "NASCAR Standings",
+    driverCount: 10 // New config option, default 10
   },
 
   start: function () {
-    this.top10 = [];
+    this.drivers = [];
     this.raceActive = false;
     this.raceName = "";
     this.loaded = false;
-    this.sendSocketNotification("FETCH_NASCAR_DATA");
+    this.sendSocketNotification("FETCH_NASCAR_DATA", { driverCount: this.config.driverCount });
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "NASCAR_DATA") {
-      this.top10 = payload.top10 || [];
+      this.drivers = payload.drivers || [];
       this.raceActive = payload.raceActive;
       this.raceName = payload.raceName || this.config.header;
       this.loaded = true;
@@ -26,7 +28,7 @@ Module.register("MMM-NASCARLive", {
     }
     if (notification === "NASCAR_ERROR") {
       this.raceName = "NASCAR Data Error";
-      this.top10 = [];
+      this.drivers = [];
       this.loaded = true;
       this.updateDom();
     }
@@ -52,10 +54,10 @@ Module.register("MMM-NASCARLive", {
       return wrapper;
     }
 
-    // Top 10 List
+    // Driver List
     const list = document.createElement("ul");
     list.className = "nascar-top10-list";
-    this.top10.forEach(driver => {
+    this.drivers.forEach(driver => {
       const li = document.createElement("li");
       li.innerHTML = `
         <span class="nascar-pos">${driver.running_position}</span>
