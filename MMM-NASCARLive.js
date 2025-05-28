@@ -6,7 +6,7 @@
 
 Module.register("MMM-NASCARLive", {
   defaults: {
-    header: "NASCAR Standings",
+    header: "NASCAR Cup Series Running Order",
     driverCount: 10, // Configurable driver count
     imageBaseUrl: "https://cf.nascar.com/data/images/carbadges/1/", // Base URL for vehicle images
     imageFileType: "png", // File type for vehicle images
