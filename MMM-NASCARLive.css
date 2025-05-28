@@ -1,18 +1,44 @@
-@import url('https://fonts.googleapis.com/css?family=Averia+Sans+Libre&display=swap');
-
 .MMM-NASCARLive {
-    font-family: 'Averia Sans Libre', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     color: #ffffff; /* White text */
     padding: 10px;
     border-radius: 8px;
-    text-align: left;
+    text-align: left; /* Left-align all content */
 }
+
 .nascar-header {
-    font-size: 20px;
-    font-weight: bold;
-    color: #ffcc00; /* NASCAR gold */
-    text-align: left;
+    text-align: left; /* Left-align header section */
     margin-bottom: 10px;
+    padding-bottom: 8px;
+    /* Remove text styling since only logo will show */
+    font-size: initial;
+    font-weight: normal;
+    color: inherit;
+    position: relative;
+    min-height: 56px; /* Ensures space for the logo even if text is hidden */
+}
+
+/* Display NASCAR Cup Series logo in the header */
+.nascar-header::before {
+    content: "";
+    display: inline-block;
+    background-image: url('https://www.nascar.com/wp-content/uploads/sites/7/2023/05/10/nascar_cup_series_logo.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 50%;
+    min-width: 120px;    /* Optional: prevents logo from being too small */
+    aspect-ratio: 408/112; /* Natural logo ratio */
+    height: auto;
+    padding-top: 0.5em;
+    vertical-align: middle;
+}
+
+/* Hide any header text (if injected by module code) */
+.nascar-header span,
+.nascar-header h1,
+.nascar-header h2,
+.nascar-header h3 {
+    display: none !important;
 }
 
 .nascar-title {
@@ -20,6 +46,7 @@
     font-weight: bold;
     color: #ffcc00; /* NASCAR gold */
     margin-bottom: 5px;
+    text-align: left;
 }
 
 .nascar-data {
@@ -51,6 +78,7 @@
 .nascar-table tr:nth-child(even) {
     background: #333;
 }
+
 .nascar-error {
     color: #ff4444; /* Red for errors */
     font-weight: bold;
