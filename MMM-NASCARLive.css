@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre:wght@400;700&display=swap');
+
 .MMM-NASCARLive {
-    font-family: Arial, sans-serif;
+    font-family: 'Averia Sans Libre', Arial, sans-serif;
     color: #ffffff; /* White text */
     padding: 10px;
     border-radius: 8px;
@@ -22,7 +24,7 @@
 .nascar-header::before {
     content: "";
     display: inline-block;
-    background-image: url('https://www.nascar.com/wp-content/uploads/sites/7/2023/05/10/nascar_cup_series_logo.svg');
+    background-image: url('logo.png');
     background-size: contain;
     background-repeat: no-repeat;
     width: 50%;
