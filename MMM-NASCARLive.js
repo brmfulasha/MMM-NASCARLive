@@ -76,7 +76,7 @@ Module.register("MMM-NASCARLive", {
   getDom: function () {
     let wrapper = document.createElement("div");
 
- // **  if (!this.raceActive) {
+ /**  if (!this.raceActive) {
    *   this.hide(1000);
   *    return wrapper;
    * } else {
