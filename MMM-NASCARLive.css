@@ -1,16 +1,15 @@
 .MMM-NASCARLive {
-    font-family: Arial, sans-serif;
     color: #ffffff; /* White text */
     padding: 10px;
     border-radius: 8px;
-    text-align: center;
+    text-align: left;
 }
 
 .nascar-header {
     font-size: 16px;
     font-weight: bold;
     color: #ffcc00; /* NASCAR gold */
-    text-align: center;
+    text-align: left;
     margin-bottom: 5px;
 }
 
