@@ -7,7 +7,10 @@
 Module.register("MMM-NASCARLive", {
   defaults: {
     header: "NASCAR Standings",
-    driverCount: 10 // New config option, default 10
+    driverCount: 10, // Configurable driver count
+    imageBaseUrl: "https://yourdomain.com/car_images/", // Base URL for vehicle images
+    imageFileType: "png", // File type for vehicle images
+    imageHeight: 10 // Height in px for vehicle images
   },
 
   start: function () {
@@ -58,11 +61,17 @@ Module.register("MMM-NASCARLive", {
     const list = document.createElement("ul");
     list.className = "nascar-top10-list";
     this.drivers.forEach(driver => {
+      const imgUrl = `${this.config.imageBaseUrl}${driver.vehicle_number}.${this.config.imageFileType}`;
+      const imageTag = `
+        <span class="nascar-car-image">
+          <img src="${imgUrl}" alt="#${driver.vehicle_number}" style="height:${this.config.imageHeight}px;">
+        </span>
+      `;
       const li = document.createElement("li");
       li.innerHTML = `
         <span class="nascar-pos">${driver.running_position}</span>
         <span class="nascar-driver-name">${driver.full_name}</span>
-        <span class="nascar-car-num">#${driver.vehicle_number}</span>
+        ${imageTag}
         <span class="nascar-driver-delta">${driver.delta ? driver.delta : ""}</span>
       `;
       list.appendChild(li);
