@@ -2,51 +2,41 @@
 
 .MMM-NASCARLive {
     font-family: 'Averia Sans Libre', Arial, sans-serif;
-    color: #ffffff; /* White text */
+    color: #ffffff;
     padding: 10px;
     border-radius: 8px;
-    text-align: left; /* Left-align all content */
+    text-align: left;
 }
 
 .nascar-header {
-    text-align: left; /* Left-align header section */
+    text-align: left;
     margin-bottom: 10px;
     padding-bottom: 8px;
-    /* Remove text styling since only logo will show */
     font-size: initial;
     font-weight: normal;
     color: inherit;
     position: relative;
-    min-height: 56px; /* Ensures space for the logo even if text is hidden */
+    min-height: 56px;
 }
 
-/* Display NASCAR Cup Series logo in the header */
-.nascar-header::before {
-    content: "";
+.nascar-header-logo {
     display: inline-block;
     background-image: url('logo.png');
     background-size: contain;
     background-repeat: no-repeat;
     width: 50%;
-    min-width: 120px;    /* Optional: prevents logo from being too small */
-    aspect-ratio: 408/112; /* Natural logo ratio */
-    height: auto;
-    padding-top: 0.5em;
+    min-width: 120px;
+    aspect-ratio: 408/112;
+    height: 56px;
     vertical-align: middle;
 }
 
-/* Hide any header text (if injected by module code) */
-.nascar-header span,
-.nascar-header h1,
-.nascar-header h2,
-.nascar-header h3 {
-    display: none !important;
-}
+/* Remove old :before and text-hiding styles */
 
 .nascar-title {
     font-size: 18px;
     font-weight: bold;
-    color: #ffcc00; /* NASCAR gold */
+    color: #ffcc00;
     margin-bottom: 5px;
     text-align: left;
 }
@@ -58,7 +48,7 @@
 }
 
 .nascar-highlight {
-    color: #ff6600; /* Bright orange for important data */
+    color: #ff6600;
     font-weight: bold;
 }
 
@@ -82,7 +72,7 @@
 }
 
 .nascar-error {
-    color: #ff4444; /* Red for errors */
+    color: #ff4444;
     font-weight: bold;
     text-align: center;
     margin-top: 10px;
