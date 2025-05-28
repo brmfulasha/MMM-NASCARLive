@@ -6,12 +6,30 @@ const FEED_URL = "https://cf.nascar.com/live/feeds/live-feed.json";
 module.exports = NodeHelper.create({
   start: function () {
     console.log("Starting node_helper for MMM-NASCARLive...");
+    this.scheduleDailyFetch();
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "FETCH_NASCAR_DATA") {
       this.fetchNASCARLiveData();
     }
+  },
+
+  /**
+   * Schedules the NASCAR data fetch to run once a day at 6:00 AM server time.
+   */
+  scheduleDailyFetch: function () {
+    const now = new Date();
+    const next6am = new Date(now);
+    next6am.setHours(6, 0, 0, 0);
+    if (now >= next6am) {
+      next6am.setDate(next6am.getDate() + 1); // Next day
+    }
+    const msUntil6am = next6am - now;
+    setTimeout(() => {
+      this.fetchNASCARLiveData();
+      setInterval(() => this.fetchNASCARLiveData(), 24 * 60 * 60 * 1000); // Repeat every 24 hours
+    }, msUntil6am);
   },
 
   fetchNASCARLiveData: function () {
