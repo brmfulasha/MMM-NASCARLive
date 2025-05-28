@@ -76,13 +76,13 @@ Module.register("MMM-NASCARLive", {
   getDom: function () {
     let wrapper = document.createElement("div");
 
-    if (!this.raceActive) {
-      this.hide(1000);
-      return wrapper;
-    } else {
-      this.show(1000);
-    }
-
+ // **  if (!this.raceActive) {
+   *   this.hide(1000);
+  *    return wrapper;
+   * } else {
+ *     this.show(1000);
+  *  }
+*/
     wrapper.innerHTML = `<div class="nascar-title">🏁 ${this.raceName} 🏁</div>`;
 
     if (this.full_name.length === 0) { // Updated from drivers to full_name
