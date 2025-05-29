@@ -9,6 +9,7 @@ Module.register("MMM-NASCARLive", {
     this.raceActive = false;
     this.raceName = "NASCAR Live Standings";
     this.currentTimeout = null;
+    this.loaded = false;
     this.getData();
   },
 
@@ -42,9 +43,18 @@ Module.register("MMM-NASCARLive", {
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "NASCAR_DATA") {
+      this.loaded = true;
       this.full_name = payload.drivers || [];
       this.raceActive = (payload.flag_state && payload.flag_state !== "FINISHED");
       this.raceName = (payload.race && payload.race.race_name) ? payload.race.race_name : "No Active NASCAR Race";
+      this.updateDom();
+      this.scheduleNextFetch();
+    } else if (notification === "NASCAR_ERROR") {
+      this.loaded = true;
+      this.full_name = [];
+      this.raceActive = false;
+      this.raceName = "No Active NASCAR Race";
+      this.errorMsg = payload;
       this.updateDom();
       this.scheduleNextFetch();
     } else {
@@ -54,11 +64,27 @@ Module.register("MMM-NASCARLive", {
 
   getDom: function () {
     let wrapper = document.createElement("div");
+
+    // Hide if not race day
+    if (!this.raceActive) {
+      this.hide(1000);
+      return wrapper; // empty
+    } else {
+      this.show(1000);
+    }
+
     wrapper.innerHTML = `<div class="nascar-title">🏁 ${this.raceName} 🏁</div>`;
-    if (this.full_name.length === 0) {
+
+    if (!this.loaded) {
       wrapper.innerHTML += "<p>Loading...</p>";
       return wrapper;
     }
+
+    if (this.full_name.length === 0) {
+      wrapper.innerHTML += "<p>No standings available.</p>";
+      return wrapper;
+    }
+
     let list = document.createElement("ul");
     this.full_name.forEach(driver => {
       let listItem = document.createElement("li");
