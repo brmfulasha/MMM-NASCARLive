@@ -1,72 +1,61 @@
 const NodeHelper = require("node_helper");
 const https = require("https");
 
-const FEED_URL = "https://cf.nascar.com/live/feeds/live-feed.json";
-
 module.exports = NodeHelper.create({
   start: function () {
     console.log("Starting node_helper for MMM-NASCARLive...");
   },
 
+  /**
+   * Handles socket notifications from the frontend.
+   * Expects "GET_NASCAR_DATA" and a payload (the data URL).
+   */
   socketNotificationReceived: function (notification, payload) {
-    if (notification === "FETCH_NASCAR_DATA") {
-      const driverCount = payload && payload.driverCount ? payload.driverCount : 10;
-      this.fetchNASCARLiveData(driverCount);
+    console.log(`Socket notification received: ${notification}`);
+    if (notification === "GET_NASCAR_DATA") {
+      if (!payload) {
+        console.error("No data URL provided for GET_NASCAR_DATA.");
+        this.sendSocketNotification("NASCAR_ERROR", "No data URL provided.");
+        return;
+      }
+      this.fetchData(payload);
+    } else {
+      console.log(`Unhandled notification: ${notification}`);
     }
   },
 
-  fetchNASCARLiveData: function (driverCount) {
+  /**
+   * Fetches NASCAR data from the given URL using the native https module and sends it back to the frontend.
+   * If the fetch fails, sends an error notification.
+   */
+  fetchData: function (jsonUrl) {
     const self = this;
-    https.get(FEED_URL, (res) => {
+    console.log("Initiating HTTPS GET request to:", jsonUrl);
+
+    https.get(jsonUrl, (res) => {
       let data = "";
 
+      // A chunk of data has been received.
       res.on("data", (chunk) => {
         data += chunk;
       });
 
+      // The whole response has been received.
       res.on("end", () => {
         try {
-          const json = JSON.parse(data);
-          // Vehicles array with running_position, vehicle_number, full_name, delta
-          if (!json.vehicles || !Array.isArray(json.vehicles)) {
-            throw new Error("No vehicles data in NASCAR feed.");
+          const parsed = JSON.parse(data);
+          if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+            throw new Error("Invalid NASCAR data received.");
           }
-
-          // Get top N by running_position (as number)
-          const drivers = json.vehicles
-            .filter(
-              (v) =>
-                v &&
-                typeof v.running_position === "number" &&
-                !!v.full_name &&
-                !!v.vehicle_number
-            )
-            .sort((a, b) => a.running_position - b.running_position)
-            .slice(0, driverCount)
-            .map((v) => ({
-              running_position: v.running_position,
-              vehicle_number: v.vehicle_number,
-              full_name: v.full_name,
-              delta: v.delta || "",
-            }));
-
-          // Determine if a race is currently active (basic check: vehicles exist)
-          const raceActive = drivers.length > 0;
-          const raceName = json.race_name || "NASCAR Cup Series";
-
-          self.sendSocketNotification("NASCAR_DATA", {
-            drivers,
-            raceActive,
-            raceName,
-          });
+          self.sendSocketNotification("NASCAR_DATA", parsed);
         } catch (error) {
-          console.error("Error parsing NASCAR data:", error);
+          console.error("Error parsing NASCAR data:", error.message);
           self.sendSocketNotification("NASCAR_ERROR", error.message);
         }
       });
     }).on("error", (error) => {
-      console.error("Error fetching NASCAR data:", error);
+      console.error("Error fetching NASCAR data:", error.message);
       self.sendSocketNotification("NASCAR_ERROR", error.message);
     });
-  },
+  }
 });
