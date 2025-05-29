@@ -1,6 +1,7 @@
 Module.register("MMM-NASCARLive", {
   defaults: {
-    updateIntervalRaceDay: 60000 // 60 seconds when a race is active
+    updateIntervalRaceDay: 60000,
+    dataUrl: "https://cf.nascar.com/live/feeds/live-feed.json"
   },
 
   start: function () {
@@ -36,15 +37,14 @@ Module.register("MMM-NASCARLive", {
   },
 
   getData: function () {
-    // Make sure this matches your node_helper.js!
-    this.sendSocketNotification("GET_NASCAR_DATA");
+    this.sendSocketNotification("GET_NASCAR_DATA", this.config.dataUrl);
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "NASCAR_DATA") {
-      this.full_name = payload.full_name;
-      this.raceActive = payload.raceActive;
-      this.raceName = payload.raceName || "No Active NASCAR Race";
+      this.full_name = payload.drivers || [];
+      this.raceActive = (payload.flag_state && payload.flag_state !== "FINISHED");
+      this.raceName = (payload.race && payload.race.race_name) ? payload.race.race_name : "No Active NASCAR Race";
       this.updateDom();
       this.scheduleNextFetch();
     } else {
@@ -54,15 +54,6 @@ Module.register("MMM-NASCARLive", {
 
   getDom: function () {
     let wrapper = document.createElement("div");
-    // For debugging, you can comment this block out.
-    /*
-    if (!this.raceActive) {
-      this.hide(1000);
-      return wrapper;
-    } else {
-      this.show(1000);
-    }
-    */
     wrapper.innerHTML = `<div class="nascar-title">🏁 ${this.raceName} 🏁</div>`;
     if (this.full_name.length === 0) {
       wrapper.innerHTML += "<p>Loading...</p>";
