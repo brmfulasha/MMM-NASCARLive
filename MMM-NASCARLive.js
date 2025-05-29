@@ -7,7 +7,7 @@ Module.register("MMM-NASCARLive", {
   start: function () {
     this.full_name = [];
     this.raceActive = false;
-    this.raceName = "NASCAR Live Standings";
+    this.raceName = "NASCAR Live Running Order";
     this.currentTimeout = null;
     this.loaded = false;
     this.getData();
@@ -73,7 +73,7 @@ Module.register("MMM-NASCARLive", {
       this.show(1000);
     }
 
-    wrapper.innerHTML = `<div class="nascar-title">🏁 ${this.raceName} 🏁</div>`;
+    wrapper.innerHTML = `<div class="nascar-title"> ${this.raceName} </div>`;
 
     if (!this.loaded) {
       wrapper.innerHTML += "<p>Loading...</p>";
@@ -81,7 +81,7 @@ Module.register("MMM-NASCARLive", {
     }
 
     if (this.full_name.length === 0) {
-      wrapper.innerHTML += "<p>No standings available.</p>";
+      wrapper.innerHTML += "<p>No Racing Currently.</p>";
       return wrapper;
     }
 
