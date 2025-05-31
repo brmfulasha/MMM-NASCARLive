@@ -2,7 +2,7 @@ Module.register("MMM-NASCARLive", {
   defaults: {
     updateIntervalRaceDay: 60000,
     dataUrl: "https://cf.nascar.com/live/feeds/live-feed.json",
-    numberOfDrivers: 10 // <-- Default number of drivers to show, configurable
+    numberOfDrivers: 10 // Default number of drivers to show, configurable
   },
 
   start: function () {
@@ -47,7 +47,8 @@ Module.register("MMM-NASCARLive", {
       this.loaded = true;
       this.full_name = payload.drivers || [];
       this.raceActive = !!(payload.flag_state && payload.flag_state !== "FINISHED");
-      this.raceName = (payload.race && payload.race.race_name) ? payload.race.race_name : "No Active NASCAR Race";
+      // Using run_name for race name
+      this.raceName = (payload.race && payload.race.run_name) ? payload.race.run_name : "No Active NASCAR Race";
       // Store series_id for image URL construction
       this.series_id = (payload.race && payload.race.series_id) ? payload.race.series_id : "1";
       this.updateDom();
@@ -89,7 +90,8 @@ Module.register("MMM-NASCARLive", {
       return wrapper;
     }
 
-    let list = document.createElement("ul");
+    // Change to a numbered list instead of a bulleted list
+    let list = document.createElement("ol");
     // Limit the number of displayed drivers based on config
     const driversToShow = this.full_name.slice(0, this.config.numberOfDrivers);
     driversToShow.forEach(driver => {
@@ -98,7 +100,7 @@ Module.register("MMM-NASCARLive", {
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
       listItem.innerHTML = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
-        #${driver.running_position}: <strong>${driver.full_name}</strong> (Car ${driver.vehicle_number})
+        #${driver.running_position}: <strong>${driver.full_name}</strong>
       `;
       list.appendChild(listItem);
     });
