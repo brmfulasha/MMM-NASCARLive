@@ -47,6 +47,8 @@ Module.register("MMM-NASCARLive", {
       this.full_name = payload.drivers || [];
       this.raceActive = !!(payload.flag_state && payload.flag_state !== "FINISHED");
       this.raceName = (payload.race && payload.race.race_name) ? payload.race.race_name : "No Active NASCAR Race";
+      // Store series_id for image URL construction
+      this.series_id = (payload.race && payload.race.series_id) ? payload.race.series_id : "1";
       this.updateDom();
       this.scheduleNextFetch();
     } else if (notification === "NASCAR_ERROR") {
@@ -54,6 +56,7 @@ Module.register("MMM-NASCARLive", {
       this.full_name = [];
       this.raceActive = false;
       this.raceName = "No Active NASCAR Race";
+      this.series_id = "1";
       this.errorMsg = payload;
       this.updateDom();
       this.scheduleNextFetch();
@@ -88,8 +91,10 @@ Module.register("MMM-NASCARLive", {
     let list = document.createElement("ul");
     this.full_name.forEach(driver => {
       let listItem = document.createElement("li");
-      // Use the vehicle_number to generate the image URL
-      const imageUrl = `https://cf.nascar.com/data/images/carbadges/1/${driver.vehicle_number}.png`;
+      // Use the series_id and vehicle_number to generate the image URL
+      // Fallback to "1" if series_id is not available
+      const seriesId = this.series_id || "1";
+      const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
       listItem.innerHTML = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
         #${driver.running_position}: <strong>${driver.full_name}</strong> (Car ${driver.vehicle_number})
