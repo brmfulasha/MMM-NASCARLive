@@ -25,9 +25,11 @@ module.exports = NodeHelper.create({
           try {
             const json = JSON.parse(data);
 
-            // Simple structure, may need adjustment based on actual feed
+            // Top-level fields
             let flag_state = json["flag_state"] || "";
-            let race = json["race"] || {};
+            let run_name = json["run_name"] || "";
+            let series_id = json["series_id"] || "1"; // in case you want this, fallback for image URLs
+
             let drivers = Array.isArray(json["vehicles"])
               ? json["vehicles"].map((car) => ({
                   running_position: car.running_position,
@@ -38,7 +40,8 @@ module.exports = NodeHelper.create({
 
             this.sendSocketNotification("NASCAR_DATA", {
               flag_state,
-              race,
+              run_name,
+              series_id,
               drivers,
             });
           } catch (e) {
