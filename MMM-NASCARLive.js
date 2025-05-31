@@ -100,7 +100,8 @@ Module.register("MMM-NASCARLive", {
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
       listItem.innerHTML = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
-        ${driver.running_position}
+        #${driver.running_position}: <strong>${driver.full_name}</strong>
+      `;
       list.appendChild(listItem);
     });
     wrapper.appendChild(list);
