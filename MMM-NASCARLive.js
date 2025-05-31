@@ -1,7 +1,8 @@
 Module.register("MMM-NASCARLive", {
   defaults: {
     updateIntervalRaceDay: 60000,
-    dataUrl: "https://cf.nascar.com/live/feeds/live-feed.json"
+    dataUrl: "https://cf.nascar.com/live/feeds/live-feed.json",
+    numberOfDrivers: 10 // <-- Default number of drivers to show, configurable
   },
 
   start: function () {
@@ -89,10 +90,10 @@ Module.register("MMM-NASCARLive", {
     }
 
     let list = document.createElement("ul");
-    this.full_name.forEach(driver => {
+    // Limit the number of displayed drivers based on config
+    const driversToShow = this.full_name.slice(0, this.config.numberOfDrivers);
+    driversToShow.forEach(driver => {
       let listItem = document.createElement("li");
-      // Use the series_id and vehicle_number to generate the image URL
-      // Fallback to "1" if series_id is not available
       const seriesId = this.series_id || "1";
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
       listItem.innerHTML = `
