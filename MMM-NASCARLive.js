@@ -47,10 +47,10 @@ Module.register("MMM-NASCARLive", {
       this.loaded = true;
       this.full_name = payload.drivers || [];
       this.raceActive = !!(payload.flag_state && payload.flag_state !== "FINISHED");
-      // Using run_name for race name
-      this.raceName = (payload.race && payload.race.run_name) ? payload.race.run_name : "No Active NASCAR Race";
-      // Store series_id for image URL construction
-      this.series_id = (payload.race && payload.race.series_id) ? payload.race.series_id : "1";
+      // Use run_name at top-level, not inside race
+      this.raceName = payload.run_name ? payload.run_name : "No Active NASCAR Race";
+      // Store series_id for image URL construction (fallback to "1" for legacy support)
+      this.series_id = payload.series_id || "1";
       this.updateDom();
       this.scheduleNextFetch();
     } else if (notification === "NASCAR_ERROR") {
@@ -90,7 +90,7 @@ Module.register("MMM-NASCARLive", {
       return wrapper;
     }
 
-    // Change to a numbered list instead of a bulleted list
+    // Numbered list (ordered list) of drivers
     let list = document.createElement("ol");
     // Limit the number of displayed drivers based on config
     const driversToShow = this.full_name.slice(0, this.config.numberOfDrivers);
@@ -100,7 +100,7 @@ Module.register("MMM-NASCARLive", {
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
       listItem.innerHTML = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
-        #${driver.running_position}: <strong>${driver.full_name}</strong>
+        #${driver.running_position}: <strong>${driver.full_name}</strong> (Car ${driver.vehicle_number})
       `;
       list.appendChild(listItem);
     });
