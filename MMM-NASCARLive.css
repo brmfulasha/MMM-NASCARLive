@@ -33,7 +33,7 @@
 }
 
 .nascar-table th, .nascar-table td {
-    padding: 5px;
+    padding: 2.5px; /* Reduced from 5px to 2.5px */
     border-bottom: 1px solid #444;
 }
 
@@ -44,6 +44,16 @@
 
 .nascar-table tr:nth-child(even) {
     background: #333;
+}
+
+/* NEW: Reduce spacing in ol/li driver lists by 50% */
+.MMM-NASCARLive ol {
+    margin: 8px 0 8px 20px; /* Reduce default <ol> margin */
+    padding: 0;
+}
+.MMM-NASCARLive ol li {
+    margin-bottom: 4px; /* Reduce default <li> margin-bottom */
+    padding: 2px 0;     /* Reduce default <li> padding */
 }
 
 .nascar-error {
