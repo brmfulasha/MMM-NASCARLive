@@ -112,10 +112,15 @@ Module.register("MMM-NASCARLive", {
       let listItem = document.createElement("li");
       const seriesId = this.series_id || "1";
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
-      listItem.innerHTML = `
+      // Show driver full_name and delta (if present), delta NOT in parentheses
+      let driverText = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
         ${driver.full_name}
       `;
+      if (typeof driver.delta !== "undefined" && driver.delta !== null && driver.delta !== "") {
+        driverText += ` <span class="nascar-delta" style="font-size:0.95em;color:#ccc;">${driver.delta}</span>`;
+      }
+      listItem.innerHTML = driverText;
       list.appendChild(listItem);
     });
     wrapper.appendChild(list);
