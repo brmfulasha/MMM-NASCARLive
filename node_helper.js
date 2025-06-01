@@ -29,8 +29,6 @@ module.exports = NodeHelper.create({
             let flag_state = json["flag_state"] || "";
             let run_name = json["run_name"] || "";
             let series_id = json["series_id"] || "1";
-
-            // New fields for lap display
             let lap_number = typeof json["lap_number"] !== "undefined" ? json["lap_number"] : null;
             let laps_in_race = typeof json["laps_in_race"] !== "undefined" ? json["laps_in_race"] : null;
 
@@ -39,6 +37,7 @@ module.exports = NodeHelper.create({
                   running_position: car.running_position,
                   full_name: car.driver.full_name,
                   vehicle_number: car.vehicle_number,
+                  delta: typeof car.delta !== "undefined" ? car.delta : ""
                 }))
               : [];
 
