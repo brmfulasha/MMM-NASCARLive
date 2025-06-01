@@ -81,7 +81,7 @@ Module.register("MMM-NASCARLive", {
     if (this.series_id === "2") {
       seriesSection += `
         <div class="nascar-series-logo" style="margin-bottom: 4px;">
-          <img src="https://www.nascar.com/wp-content/uploads/sites/7/2023/05/10/nascar_xfinity_series_logos-1.svg" 
+          <img src="https://loodibee.com/wp-content/uploads/NASCAR-Xfinity-Series-logo.png" 
                alt="NASCAR Xfinity Series" 
                style="height:50px;width:auto;display:block;margin:0 auto;">
         </div>
