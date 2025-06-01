@@ -37,7 +37,10 @@ module.exports = NodeHelper.create({
                   running_position: car.running_position,
                   full_name: car.driver.full_name,
                   vehicle_number: car.vehicle_number,
-                  delta: typeof car.delta !== "undefined" ? car.delta : ""
+                  delta:
+                    typeof car.delta !== "undefined" && car.delta !== null
+                      ? car.delta.toString()
+                      : ""
                 }))
               : [];
 
