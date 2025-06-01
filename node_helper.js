@@ -28,7 +28,11 @@ module.exports = NodeHelper.create({
             // Top-level fields
             let flag_state = json["flag_state"] || "";
             let run_name = json["run_name"] || "";
-            let series_id = json["series_id"] || "1"; // in case you want this, fallback for image URLs
+            let series_id = json["series_id"] || "1";
+
+            // New fields for lap display
+            let lap_number = typeof json["lap_number"] !== "undefined" ? json["lap_number"] : null;
+            let laps_in_race = typeof json["laps_in_race"] !== "undefined" ? json["laps_in_race"] : null;
 
             let drivers = Array.isArray(json["vehicles"])
               ? json["vehicles"].map((car) => ({
@@ -42,6 +46,8 @@ module.exports = NodeHelper.create({
               flag_state,
               run_name,
               series_id,
+              lap_number,
+              laps_in_race,
               drivers,
             });
           } catch (e) {
