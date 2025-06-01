@@ -134,10 +134,24 @@ Module.register("MMM-NASCARLive", {
       let listItem = document.createElement("li");
       const seriesId = this.series_id || "1";
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
-      // Show driver full_name and delta (if present), but not for the first driver
+      // Determine manufacturer logo
+      let manufacturerLogo = "";
+      if (driver.vehicle_manufacturer) {
+        const man = driver.vehicle_manufacturer.toLowerCase();
+        if (man === "tyt") {
+          manufacturerLogo = `<img src="https://www.nascar.com/wp-content/uploads/sites/7/2020/04/06/Toyota-35x35.png" alt="Toyota" style="height:18px;vertical-align:middle;margin-left:4px;">`;
+        } else if (man === "frd") {
+          manufacturerLogo = `<img src="https://www.nascar.com/wp-content/uploads/sites/7/2024/04/10/Ford-Logo-1-62x35.png" alt="Ford" style="height:18px;vertical-align:middle;margin-left:4px;">`;
+        } else if (man === "chv") {
+          manufacturerLogo = `<img src="https://www.nascar.com/wp-content/uploads/sites/7/2017/01/Chevy-Driver-Page-New-2-160x811-52x35.png" alt="Chevrolet" style="height:18px;vertical-align:middle;margin-left:4px;">`;
+        } else {
+          manufacturerLogo = ` <span class="nascar-manufacturer" style="font-size:0.95em;color:#8fc;">(${driver.vehicle_manufacturer})</span>`;
+        }
+      }
+      // Show driver full_name, manufacturer logo, and delta (if present), but not for the first driver
       let driverText = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
-        ${driver.full_name}
+        ${driver.full_name}${manufacturerLogo}
       `;
       if (
         idx !== 0 &&
