@@ -38,6 +38,7 @@ module.exports = NodeHelper.create({
                   running_position: car.running_position,
                   full_name: car.driver.full_name,
                   vehicle_number: car.vehicle_number,
+                  vehicle_manufacturer: car.vehicle_manufacturer || "", // ensure this field is present
                   delta:
                     typeof car.delta !== "undefined" && car.delta !== null
                       ? car.delta.toString()
@@ -46,7 +47,7 @@ module.exports = NodeHelper.create({
               : [];
 
             this.sendSocketNotification("NASCAR_DATA", {
-              flag_state, // Always present, even if null
+              flag_state,
               run_name,
               track_name,
               series_id,
