@@ -11,6 +11,7 @@ Module.register("MMM-NASCARLive", {
     this.raceName = "NASCAR Live Running Order";
     this.currentTimeout = null;
     this.loaded = false;
+    this.series_id = "1"; // Default value
     this.getData();
   },
 
@@ -78,7 +79,13 @@ Module.register("MMM-NASCARLive", {
       this.show(1000);
     }
 
-    wrapper.innerHTML = `<div class="nascar-title"> ${this.raceName} </div>`;
+    // Show series_id above run_name header
+    wrapper.innerHTML = `
+      <div class="nascar-series-id" style="font-size:1.1em;font-weight:bold;margin-bottom:2px;">
+        Series ID: ${this.series_id}
+      </div>
+      <div class="nascar-title">${this.raceName}</div>
+    `;
 
     if (!this.loaded) {
       wrapper.innerHTML += "<p>Loading...</p>";
