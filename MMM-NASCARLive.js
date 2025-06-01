@@ -108,17 +108,24 @@ Module.register("MMM-NASCARLive", {
 
     let list = document.createElement("ol");
     const driversToShow = this.full_name.slice(0, this.config.numberOfDrivers);
-    driversToShow.forEach(driver => {
+    driversToShow.forEach((driver, idx) => {
       let listItem = document.createElement("li");
       const seriesId = this.series_id || "1";
       const imageUrl = `https://cf.nascar.com/data/images/carbadges/${seriesId}/${driver.vehicle_number}.png`;
-      // Show driver full_name and delta (if present), delta NOT in parentheses
+      // Show driver full_name and delta (if present), but not for the first driver
       let driverText = `
         <img src="${imageUrl}" alt="Car ${driver.vehicle_number}" style="height:32px;vertical-align:middle;margin-right:8px;">
         ${driver.full_name}
       `;
-      if (typeof driver.delta !== "undefined" && driver.delta !== null && driver.delta !== "") {
-        driverText += ` <span class="nascar-delta" style="font-size:0.95em;color:#ccc;">${driver.delta}</span>`;
+      if (
+        idx !== 0 &&
+        typeof driver.delta !== "undefined" &&
+        driver.delta !== null &&
+        driver.delta !== ""
+      ) {
+        // Always put a "-" sign before the delta, regardless of the value
+        let deltaStr = driver.delta.startsWith("-") ? driver.delta : `-${driver.delta}`;
+        driverText += ` <span class="nascar-delta" style="font-size:0.95em;color:#ccc;">${deltaStr}</span>`;
       }
       listItem.innerHTML = driverText;
       list.appendChild(listItem);
