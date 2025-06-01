@@ -48,9 +48,7 @@ Module.register("MMM-NASCARLive", {
       this.loaded = true;
       this.full_name = payload.drivers || [];
       this.raceActive = !!(payload.flag_state && payload.flag_state !== "FINISHED");
-      // Use run_name at top-level, not inside race
       this.raceName = payload.run_name ? payload.run_name : "No Active NASCAR Race";
-      // Store series_id for image URL construction (fallback to "1" for legacy support)
       this.series_id = payload.series_id || "1";
       this.updateDom();
       this.scheduleNextFetch();
@@ -71,7 +69,6 @@ Module.register("MMM-NASCARLive", {
   getDom: function () {
     let wrapper = document.createElement("div");
 
-    // Hide if not race day
     if (!this.raceActive) {
       this.hide(1000);
       return wrapper; // empty
@@ -79,11 +76,20 @@ Module.register("MMM-NASCARLive", {
       this.show(1000);
     }
 
-    // Show series_id above run_name header
+    // Build series_id section with image if series_id == "2"
+    let seriesSection = `<div class="nascar-series-id" style="font-size:1.1em;font-weight:bold;margin-bottom:2px;">Series ID: ${this.series_id}</div>`;
+    if (this.series_id === "2") {
+      seriesSection += `
+        <div class="nascar-series-logo" style="margin-bottom: 4px;">
+          <img src="https://www.nascar.com/wp-content/uploads/sites/7/2023/05/10/nascar_xfinity_series_logos-1.svg" 
+               alt="NASCAR Xfinity Series" 
+               style="height:50px;width:auto;display:block;margin:0 auto;">
+        </div>
+      `;
+    }
+
     wrapper.innerHTML = `
-      <div class="nascar-series-id" style="font-size:1.1em;font-weight:bold;margin-bottom:2px;">
-        Series ID: ${this.series_id}
-      </div>
+      ${seriesSection}
       <div class="nascar-title">${this.raceName}</div>
     `;
 
@@ -97,9 +103,7 @@ Module.register("MMM-NASCARLive", {
       return wrapper;
     }
 
-    // Numbered list (ordered list) of drivers
     let list = document.createElement("ol");
-    // Limit the number of displayed drivers based on config
     const driversToShow = this.full_name.slice(0, this.config.numberOfDrivers);
     driversToShow.forEach(driver => {
       let listItem = document.createElement("li");
