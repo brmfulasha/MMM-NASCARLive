@@ -28,6 +28,7 @@ module.exports = NodeHelper.create({
             // Top-level fields
             let flag_state = json["flag_state"] || "";
             let run_name = json["run_name"] || "";
+            let track_name = json["track_name"] || "";
             let series_id = json["series_id"] || "1";
             let lap_number = typeof json["lap_number"] !== "undefined" ? json["lap_number"] : null;
             let laps_in_race = typeof json["laps_in_race"] !== "undefined" ? json["laps_in_race"] : null;
@@ -47,6 +48,7 @@ module.exports = NodeHelper.create({
             this.sendSocketNotification("NASCAR_DATA", {
               flag_state,
               run_name,
+              track_name,
               series_id,
               lap_number,
               laps_in_race,
