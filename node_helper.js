@@ -26,7 +26,7 @@ module.exports = NodeHelper.create({
             const json = JSON.parse(data);
 
             // Top-level fields
-            let flag_state = json["flag_state"] || "";
+            let flag_state = typeof json["flag_state"] !== "undefined" ? json["flag_state"] : null;
             let run_name = json["run_name"] || "";
             let track_name = json["track_name"] || "";
             let series_id = json["series_id"] || "1";
@@ -46,7 +46,7 @@ module.exports = NodeHelper.create({
               : [];
 
             this.sendSocketNotification("NASCAR_DATA", {
-              flag_state,
+              flag_state, // Always present, even if null
               run_name,
               track_name,
               series_id,
