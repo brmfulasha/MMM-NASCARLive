@@ -2,7 +2,7 @@ Module.register("MMM-NASCARLive", {
   defaults: {
     updateIntervalRaceDay: 60000,
     dataUrl: "https://cf.nascar.com/live/feeds/live-feed.json",
-    numberOfDrivers: 10 // Default number of drivers to show, configurable
+    numberOfDrivers: 10
   },
 
   start: function () {
@@ -11,7 +11,7 @@ Module.register("MMM-NASCARLive", {
     this.raceName = "NASCAR Live Running Order";
     this.currentTimeout = null;
     this.loaded = false;
-    this.series_id = "1"; // Default value
+    this.series_id = "1";
     this.getData();
   },
 
@@ -71,7 +71,7 @@ Module.register("MMM-NASCARLive", {
 
     if (!this.raceActive) {
       this.hide(1000);
-      return wrapper; // empty
+      return wrapper;
     } else {
       this.show(1000);
     }
@@ -81,7 +81,7 @@ Module.register("MMM-NASCARLive", {
     if (this.series_id === "2") {
       seriesSection += `
         <div class="nascar-series-logo" style="margin-bottom: 4px;">
-          <img src="https://loodibee.com/wp-content/uploads/NASCAR-Xfinity-Series-logo.png" 
+          <img src="https://www.nascar.com/wp-content/uploads/sites/7/2023/05/10/nascar_xfinity_series_logos-1.svg" 
                alt="NASCAR Xfinity Series" 
                style="height:50px;width:auto;display:block;margin:0 auto;">
         </div>
