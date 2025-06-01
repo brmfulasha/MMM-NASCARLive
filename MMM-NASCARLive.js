@@ -12,6 +12,8 @@ Module.register("MMM-NASCARLive", {
     this.currentTimeout = null;
     this.loaded = false;
     this.series_id = "1"; // Default value
+    this.lap_number = null;      // Track lap_number from JSON
+    this.laps_in_race = null;    // Track laps_in_race from JSON
     this.getData();
   },
 
@@ -50,6 +52,8 @@ Module.register("MMM-NASCARLive", {
       this.raceActive = !!(payload.flag_state && payload.flag_state !== "FINISHED");
       this.raceName = payload.run_name ? payload.run_name : "No Active NASCAR Race";
       this.series_id = payload.series_id || "1";
+      this.lap_number = (typeof payload.lap_number !== "undefined") ? payload.lap_number : null;
+      this.laps_in_race = (typeof payload.laps_in_race !== "undefined") ? payload.laps_in_race : null;
       this.updateDom();
       this.scheduleNextFetch();
     } else if (notification === "NASCAR_ERROR") {
@@ -58,6 +62,8 @@ Module.register("MMM-NASCARLive", {
       this.raceActive = false;
       this.raceName = "No Active NASCAR Race";
       this.series_id = "1";
+      this.lap_number = null;
+      this.laps_in_race = null;
       this.errorMsg = payload;
       this.updateDom();
       this.scheduleNextFetch();
@@ -76,10 +82,19 @@ Module.register("MMM-NASCARLive", {
       this.show(1000);
     }
 
-    // Only show the race name header, no series_id or image
+    // Race name header
     wrapper.innerHTML = `
       <div class="nascar-title">${this.raceName}</div>
     `;
+
+    // Lap number section (inserted between header and drivers)
+    if (this.lap_number !== null && this.laps_in_race !== null) {
+      wrapper.innerHTML += `
+        <div class="nascar-lap" style="font-size:1.1em;margin-bottom:4px;">
+          ${this.lap_number} / ${this.laps_in_race}
+        </div>
+      `;
+    }
 
     if (!this.loaded) {
       wrapper.innerHTML += "<p>Loading...</p>";
