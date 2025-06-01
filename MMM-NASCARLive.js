@@ -9,6 +9,7 @@ Module.register("MMM-NASCARLive", {
     this.full_name = [];
     this.raceActive = false;
     this.raceName = "NASCAR Live Running Order";
+    this.trackName = "";
     this.currentTimeout = null;
     this.loaded = false;
     this.series_id = "1"; // Default value
@@ -51,6 +52,7 @@ Module.register("MMM-NASCARLive", {
       this.full_name = payload.drivers || [];
       this.raceActive = !!(payload.flag_state && payload.flag_state !== "FINISHED");
       this.raceName = payload.run_name ? payload.run_name : "No Active NASCAR Race";
+      this.trackName = payload.track_name ? payload.track_name : "";
       this.series_id = payload.series_id || "1";
       this.lap_number = (typeof payload.lap_number !== "undefined") ? payload.lap_number : null;
       this.laps_in_race = (typeof payload.laps_in_race !== "undefined") ? payload.laps_in_race : null;
@@ -61,6 +63,7 @@ Module.register("MMM-NASCARLive", {
       this.full_name = [];
       this.raceActive = false;
       this.raceName = "No Active NASCAR Race";
+      this.trackName = "";
       this.series_id = "1";
       this.lap_number = null;
       this.laps_in_race = null;
@@ -86,6 +89,14 @@ Module.register("MMM-NASCARLive", {
     wrapper.innerHTML = `
       <div class="nascar-title">${this.raceName}</div>
     `;
+    // Track name underneath race name
+    if (this.trackName) {
+      wrapper.innerHTML += `
+        <div class="nascar-track" style="font-size:1em;margin-bottom:4px;">
+          ${this.trackName}
+        </div>
+      `;
+    }
 
     // Lap number section (inserted between header and drivers)
     if (this.lap_number !== null && this.laps_in_race !== null) {
