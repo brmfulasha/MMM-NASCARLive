@@ -15,6 +15,7 @@ Module.register("MMM-NASCARLive", {
     this.series_id = "1"; // Default value
     this.lap_number = null;      // Track lap_number from JSON
     this.laps_in_race = null;    // Track laps_in_race from JSON
+    this.flag_state = null;      // Track flag_state from JSON
     this.getData();
   },
 
@@ -56,6 +57,7 @@ Module.register("MMM-NASCARLive", {
       this.series_id = payload.series_id || "1";
       this.lap_number = (typeof payload.lap_number !== "undefined") ? payload.lap_number : null;
       this.laps_in_race = (typeof payload.laps_in_race !== "undefined") ? payload.laps_in_race : null;
+      this.flag_state = typeof payload.flag_state !== "undefined" ? payload.flag_state : null;
       this.updateDom();
       this.scheduleNextFetch();
     } else if (notification === "NASCAR_ERROR") {
@@ -67,6 +69,7 @@ Module.register("MMM-NASCARLive", {
       this.series_id = "1";
       this.lap_number = null;
       this.laps_in_race = null;
+      this.flag_state = null;
       this.errorMsg = payload;
       this.updateDom();
       this.scheduleNextFetch();
@@ -105,6 +108,14 @@ Module.register("MMM-NASCARLive", {
           ${this.lap_number} / ${this.laps_in_race}
         </div>
       `;
+      // Show flag_state immediately after laps
+      if (this.flag_state) {
+        wrapper.innerHTML += `
+          <div class="nascar-flagstate" style="font-size:1em;margin-bottom:4px;">
+            Flag: ${this.flag_state}
+          </div>
+        `;
+      }
     }
 
     if (!this.loaded) {
