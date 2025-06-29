@@ -20,29 +20,34 @@ Module.register("MMM-NASCARLive", {
   },
 
   scheduleNextFetch: function () {
-    let interval;
-    if (this.raceActive) {
-      interval = this.config.updateIntervalRaceDay;
-    } else {
-      const now = new Date();
-      const next6am = new Date();
-      next6am.setHours(6, 0, 0, 0);
-      if (now.getTime() >= next6am.getTime()) {
-        next6am.setDate(next6am.getDate() + 1);
-      }
-      interval = next6am.getTime() - now.getTime();
-      console.log(
-        `Non–race day: Next poll scheduled in ${interval} ms (at ${next6am.toLocaleTimeString()}).`
-      );
-    }
-    if (this.currentTimeout) {
-      clearTimeout(this.currentTimeout);
-    }
-    this.currentTimeout = setTimeout(() => {
-      this.getData();
-    }, interval);
-  },
+  let interval;
 
+  // If flag_state is 4, wait 12 hours (12*60*60*1000 ms)
+  if (this.flag_state === 4 || this.flag_state === "4") {
+    interval = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+    console.log("Flag state is 4: Next update scheduled in 12 hours.");
+  } else if (this.raceActive) {
+    interval = this.config.updateIntervalRaceDay;
+  } else {
+    const now = new Date();
+    const next6am = new Date();
+    next6am.setHours(6, 0, 0, 0);
+    if (now.getTime() >= next6am.getTime()) {
+      next6am.setDate(next6am.getDate() + 1);
+    }
+    interval = next6am.getTime() - now.getTime();
+    console.log(
+      `Non–race day: Next poll scheduled in ${interval} ms (at ${next6am.toLocaleTimeString()}).`
+    );
+  }
+  if (this.currentTimeout) {
+    clearTimeout(this.currentTimeout);
+  }
+  this.currentTimeout = setTimeout(() => {
+    this.getData();
+  }, interval);
+},
+  
   getData: function () {
     this.sendSocketNotification("GET_NASCAR_DATA", this.config.dataUrl);
   },
