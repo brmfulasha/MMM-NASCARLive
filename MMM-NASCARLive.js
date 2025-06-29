@@ -88,6 +88,13 @@ Module.register("MMM-NASCARLive", {
       this.show(1000);
     }
 
+    // Hide if flag_state is 9
+  if (this.flag_state === "9") {
+    this.hide(1000);
+    return wrapper;
+  } else {
+    this.show(1000);
+  }
     // Race name header
     wrapper.innerHTML = `
       <div class="nascar-title">${this.raceName}</div>
