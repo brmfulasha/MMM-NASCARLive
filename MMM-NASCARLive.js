@@ -1,3 +1,14 @@
+function getFlagStateText(flag_state) {
+  switch (String(flag_state)) {
+    case "1": return "Green Flag";
+    case "2": return "Caution Flag";
+    case "3": return "Red Flag";
+    case "4": return "Checkered Flag";
+    case "5": return "White Flag";
+    default: return `Flag: ${flag_state}`;
+  }
+}
+
 Module.register("MMM-NASCARLive", {
   defaults: {
     updateIntervalRaceDay: 60000,
@@ -20,33 +31,39 @@ Module.register("MMM-NASCARLive", {
   },
 
   scheduleNextFetch: function () {
-  let interval;
+    let interval;
 
-  // If flag_state is 4, wait 12 hours (12*60*60*1000 ms)
-  if (this.flag_state === 4 || this.flag_state === "4") {
-    interval = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
-    console.log("Flag state is 4: Next update scheduled in 12 hours.");
-  } else if (this.raceActive) {
-    interval = this.config.updateIntervalRaceDay;
-  } else {
-    const now = new Date();
-    const next6am = new Date();
-    next6am.setHours(6, 0, 0, 0);
-    if (now.getTime() >= next6am.getTime()) {
-      next6am.setDate(next6am.getDate() + 1);
+    // If flag_state is 4 (race finished), schedule next update at midnight
+    if (this.flag_state === 4 || this.flag_state === "4") {
+      const now = new Date();
+      const nextMidnight = new Date();
+      nextMidnight.setHours(24, 0, 0, 0); // Set to midnight of next day
+      if (now.getTime() >= nextMidnight.getTime()) {
+        nextMidnight.setDate(nextMidnight.getDate() + 1);
+      }
+      interval = nextMidnight.getTime() - now.getTime();
+      console.log(`Flag state is 4 (race finished): Next update scheduled at midnight in ${interval} ms (at ${nextMidnight.toLocaleTimeString()}).`);
+    } else if (this.raceActive) {
+      interval = this.config.updateIntervalRaceDay;
+    } else {
+      const now = new Date();
+      const next6am = new Date();
+      next6am.setHours(6, 0, 0, 0);
+      if (now.getTime() >= next6am.getTime()) {
+        next6am.setDate(next6am.getDate() + 1);
+      }
+      interval = next6am.getTime() - now.getTime();
+      console.log(
+        `Non–race day: Next poll scheduled in ${interval} ms (at ${next6am.toLocaleTimeString()}).`
+      );
     }
-    interval = next6am.getTime() - now.getTime();
-    console.log(
-      `Non–race day: Next poll scheduled in ${interval} ms (at ${next6am.toLocaleTimeString()}).`
-    );
-  }
-  if (this.currentTimeout) {
-    clearTimeout(this.currentTimeout);
-  }
-  this.currentTimeout = setTimeout(() => {
-    this.getData();
-  }, interval);
-},
+    if (this.currentTimeout) {
+      clearTimeout(this.currentTimeout);
+    }
+    this.currentTimeout = setTimeout(() => {
+      this.getData();
+    }, interval);
+  },
   
   getData: function () {
     this.sendSocketNotification("GET_NASCAR_DATA", this.config.dataUrl);
@@ -94,16 +111,17 @@ Module.register("MMM-NASCARLive", {
     }
 
      // Hide if flag_state is 9 (number or string)
-  if (this.flag_state === 9 || this.flag_state === "9") {
-    this.hide(1000);
-    return wrapper;
-  } else {
-    this.show(1000);
-  }
+    if (this.flag_state === 9 || this.flag_state === "9") {
+      this.hide(1000);
+      return wrapper;
+    } else {
+      this.show(1000);
+    }
     // Race name header
     wrapper.innerHTML = `
       <div class="nascar-title">${this.raceName}</div>
     `;
+
     // Track name underneath race name
     if (this.trackName) {
       wrapper.innerHTML += `
@@ -120,11 +138,11 @@ Module.register("MMM-NASCARLive", {
           ${this.lap_number} / ${this.laps_in_race}
         </div>
       `;
-      // Show flag_state immediately after laps
+      // Show flag_state as descriptive text
       if (this.flag_state) {
         wrapper.innerHTML += `
           <div class="nascar-flagstate" style="font-size:1em;margin-bottom:4px;">
-            Flag: ${this.flag_state}
+            ${getFlagStateText(this.flag_state)}
           </div>
         `;
       }
