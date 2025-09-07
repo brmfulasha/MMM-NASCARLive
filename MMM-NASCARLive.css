@@ -2,28 +2,29 @@
 
 .MMM-NASCARLive {
     font-family: 'Averia Sans Libre', Arial, sans-serif;
-    color: #ffffff; /* White text */
+    color: #ffffff;
     padding: 10px;
     border-radius: 8px;
     text-align: left;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); /* Subtle depth */
 }
 
 .nascar-title {
-    font-size: 18px;
+    font-size: clamp(16px, 2vw, 20px);
     font-weight: bold;
-    color: #ffcc00; /* NASCAR gold */
+    color: #ffcc00;
     margin-bottom: 5px;
     text-align: left;
 }
 
 .nascar-data {
-    font-size: 14px;
+    font-size: clamp(12px, 1.5vw, 16px);
     line-height: 1.5;
     text-align: left;
 }
 
 .nascar-highlight {
-    color: #ff6600; /* Bright orange for important data */
+    color: #ff6600;
     font-weight: bold;
 }
 
@@ -33,32 +34,82 @@
 }
 
 .nascar-table th, .nascar-table td {
-    padding: 2.5px; /* Reduced from 5px to 2.5px */
+    padding: 2.5px;
     border-bottom: 1px solid #444;
 }
 
 .nascar-table th {
     background: #222;
     color: #ffcc00;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .nascar-table tr:nth-child(even) {
     background: #333;
 }
 
-/* NEW: Reduce spacing in ol/li driver lists by 50% */
+.nascar-table tr:hover {
+    background-color: #444;
+}
+
+/* Ordered list spacing tweaks */
 .MMM-NASCARLive ol {
-    margin: 8px 0 8px 20px; /* Reduce default <ol> margin */
+    margin: 8px 0 8px 20px;
     padding: 0;
 }
 .MMM-NASCARLive ol li {
-    margin-bottom: 4px; /* Reduce default <li> margin-bottom */
-    padding: 2px 0;     /* Reduce default <li> padding */
+    margin-bottom: 4px;
+    padding: 2px 0;
 }
 
+/* Error message styling */
 .nascar-error {
-    color: #ff4444; /* Red for errors */
+    color: #ff4444;
     font-weight: bold;
     text-align: center;
     margin-top: 10px;
+}
+
+/* Inline flag + lap status row */
+.nascar-status-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.nascar-flag {
+    font-weight: bold;
+}
+
+/* Flag color modifiers */
+.flag-green {
+    color: #00cc66;
+}
+.flag-yellow {
+    color: #ffcc00;
+}
+.flag-red {
+    color: #ff4444;
+}
+.flag-checkered {
+    color: #ffffff;
+    background-color: #000;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.nascar-laps {
+    color: #ffffff;
+}
+
+/* Optional: highlight current leader row */
+.nascar-leader {
+    background-color: #ffcc00;
+    color: #000;
+    font-weight: bold;
 }
