@@ -131,21 +131,14 @@ Module.register("MMM-NASCARLive", {
       `;
     }
 
-    // Lap number section (inserted between header and drivers)
+    // Lap number and Flag Status section on the same line
     if (this.lap_number !== null && this.laps_in_race !== null) {
       wrapper.innerHTML += `
-        <div class="nascar-lap" style="font-size:1.1em;margin-bottom:4px;">
-          ${this.lap_number} / ${this.laps_in_race}
+        <div class="nascar-info" style="font-size:1.1em;margin-bottom:4px;">
+          <span class="nascar-lap">${this.lap_number} / ${this.laps_in_race}</span>
+          ${this.flag_state ? `<span class="nascar-flagstate" style="margin-left:8px;">${getFlagStateText(this.flag_state)}</span>` : ''}
         </div>
       `;
-      // Show flag_state as descriptive text
-      if (this.flag_state) {
-        wrapper.innerHTML += `
-          <div class="nascar-flagstate" style="font-size:1em;margin-bottom:4px;">
-            ${getFlagStateText(this.flag_state)}
-          </div>
-        `;
-      }
     }
 
     if (!this.loaded) {
